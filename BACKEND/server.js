@@ -4,7 +4,7 @@ const multer = require("multer");
 const path = require("path");
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
@@ -13,6 +13,7 @@ app.use('/admin', express.static(path.join(__dirname, '../ADMIN')));
 app.use('/comprador', express.static(path.join(__dirname, '../COMPRADOR')));
 app.use('/vendedor', express.static(path.join(__dirname, '../VENDEDOR')));
 app.use('/uploads', express.static(path.join(__dirname, '../Uploads')));
+
 /* =========================
    ALMACENAMIENTO TEMPORAL
    ========================= */
@@ -46,7 +47,7 @@ let siguienteTiendaId = 2;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, "../uploads"));
+        cb(null, path.join(__dirname, "../Uploads"));
     },
 
     filename: function (req, file, cb) {
@@ -185,13 +186,6 @@ app.delete("/api/productos/:id", (req, res) => {
 
 app.post("/api/ia/analizar-producto", upload.single("imagen"), (req, res) => {
 
-    /*
-       TODAVÍA NO CONECTAMOS UN MODELO DE IA.
-
-       Esta ruta está preparada para que posteriormente
-       conectemos el sistema de visión artificial.
-    */
-
     res.json({
 
         mensaje: "Imagen recibida correctamente",
@@ -209,16 +203,6 @@ app.post("/api/ia/analizar-producto", upload.single("imagen"), (req, res) => {
         }
     });
 });
-
-
-/* =========================
-   SERVIDOR DE ARCHIVOS
-   ========================= */
-
-app.use(
-    "/uploads",
-    express.static(path.join(__dirname, "../uploads"))
-);
 
 
 /* =========================

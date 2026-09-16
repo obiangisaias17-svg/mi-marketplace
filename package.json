@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node backend/server.js"
+    "start": "node BACKEND/server.js"
   },
   "dependencies": {
     "cors": "^2.8.6",
