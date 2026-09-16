@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Marketplace - Vendedor</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav {
+            margin-top: 15px;
+        }
+
+        nav button {
+            margin-right: 10px;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        input,
+        textarea,
+        select {
+
+            width: 100%;
+            padding: 12px;
+
+            margin-top: 8px;
+            margin-bottom: 15px;
+
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        button.primary {
+
+            background: #2563eb;
+            color: white;
+
+            border: none;
+
+            padding: 12px 20px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+        }
+
+        .productos {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+
+            gap: 20px;
+        }
+
+        .producto {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 15px;
+
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .producto img {
+
+            width: 100%;
+
+            height: 180px;
+
+            object-fit: cover;
+
+            border-radius: 8px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>🏪 Panel del vendedor</h1>
+
+    <nav>
+
+        <button onclick="mostrarProductos()">
+            Mis productos
+        </button>
+
+        <button onclick="mostrarFormulario()">
+            Añadir producto
+        </button>
+
+    </nav>
+
+</header>
+
+
+<main>
+
+    <div class="panel" id="formulario">
+
+        <h2>Añadir producto</h2>
+
+        <form id="productoForm">
+
+            <label>Nombre del producto</label>
+
+            <input
+                type="text"
+                id="nombre"
+                required
+            >
+
+
+            <label>Precio</label>
+
+            <input
+                type="number"
+                id="precio"
+                required
+            >
+
+
+            <label>Categoría</label>
+
+            <select id="categoria">
+
+                <option value="Ropa">
+                    Ropa
+                </option>
+
+                <option value="Electrónica">
+                    Electrónica
+                </option>
+
+                <option value="Calzado">
+                    Calzado
+                </option>
+
+                <option value="Alimentación">
+                    Alimentación
+                </option>
+
+                <option value="Otros">
+                    Otros
+                </option>
+
+            </select>
+
+
+            <label>Descripción</label>
+
+            <textarea
+                id="descripcion">
+            </textarea>
+
+
+            <label>Fotografía</label>
+
+            <input
+                type="file"
+                id="imagen"
+                accept="image/*"
+            >
+
+
+            <button
+                class="primary"
+                type="submit">
+
+                Publicar producto
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="panel">
+
+        <h2>Mis productos</h2>
+
+        <div
+            class="productos"
+            id="productos">
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+const API = "http://localhost:4000";
+
+
+async function cargarProductos() {
+
+    const respuesta =
+        await fetch(`${API}/api/productos`);
+
+    const productos =
+        await respuesta.json();
+
+    const contenedor =
+        document.getElementById("productos");
+
+    contenedor.innerHTML = "";
+
+
+    productos.forEach(producto => {
+
+        const elemento =
+            document.createElement("div");
+
+        elemento.className = "producto";
+
+
+        elemento.innerHTML = `
+
+            ${
+                producto.imagen
+
+                ?
+
+                `<img src="${API}${producto.imagen}">`
+
+                :
+
+                ""
+            }
+
+            <h3>
+                ${producto.nombre}
+            </h3>
+
+            <p>
+                ${producto.descripcion}
+            </p>
+
+            <strong>
+                ${producto.precio} XAF
+            </strong>
+
+            <p>
+                ${producto.categoria}
+            </p>
+
+        `;
+
+
+        contenedor.appendChild(elemento);
+
+    });
+
+}
+
+
+document
+    .getElementById("productoForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const datos =
+            new FormData();
+
+
+        datos.append(
+            "tiendaId",
+            "1"
+        );
+
+
+        datos.append(
+            "nombre",
+            document.getElementById("nombre").value
+        );
+
+
+        datos.append(
+            "precio",
+            document.getElementById("precio").value
+        );
+
+
+        datos.append(
+            "categoria",
+            document.getElementById("categoria").value
+        );
+
+
+        datos.append(
+            "descripcion",
+            document.getElementById("descripcion").value
+        );
+
+
+        const archivo =
+            document.getElementById("imagen").files[0];
+
+
+        if (archivo) {
+
+            datos.append(
+                "imagen",
+                archivo
+            );
+
+        }
+
+
+        const respuesta =
+            await fetch(
+                `${API}/api/productos`,
+                {
+                    method: "POST",
+                    body: datos
+                }
+            );
+
+
+        const resultado =
+            await respuesta.json();
+
+
+        if (!respuesta.ok) {
+
+            alert(resultado.error);
+
+            return;
+
+        }
+
+
+        alert(
+            "Producto publicado correctamente"
+        );
+
+
+        document
+            .getElementById("productoForm")
+            .reset();
+
+
+        cargarProductos();
+
+    });
+
+
+function mostrarFormulario() {
+
+    document
+        .getElementById("formulario")
+        .style.display = "block";
+
+}
+
+
+function mostrarProductos() {
+
+    document
+        .getElementById("formulario")
+        .style.display = "none";
+
+}
+
+
+cargarProductos();
+
+</script>
+
+</body>
+
+</html>

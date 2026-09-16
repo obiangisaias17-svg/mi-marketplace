@@ -1,0 +1,17 @@
+mi-marketplace
+│
+├── backend
+│   └── server.js
+│
+├── uploads
+│
+├── vendedor
+│   └── index.html
+│
+├── comprador
+│   └── index.html
+│
+├── admin
+│   └── index.html
+│
+└── package.json
